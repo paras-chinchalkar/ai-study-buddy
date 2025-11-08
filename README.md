@@ -37,12 +37,15 @@ streamlit run application.py
 2. Go to [Streamlit Cloud](https://streamlit.io/cloud) and connect your repository
 
 3. **Important**: Add your Groq API key as a secret:
-   - Go to your app settings in Streamlit Cloud
-   - Click on **"Secrets"** in the sidebar
-   - Add the following:
+   - In your Streamlit Cloud app, click the **three dots (⋮)** menu in the top right
+   - Select **"Settings"** or **"Manage app"**
+   - Click on **"Secrets"** in the left sidebar
+   - Paste the following (replace with your actual API key):
    ```toml
-   GROQ_API_KEY = "your_api_key_here"
+   GROQ_API_KEY = "your_actual_groq_api_key_here"
    ```
+   - **Important**: Use TOML format with quotes around the value
+   - Click **"Save"** - the app will automatically redeploy
 
 4. Deploy your app!
 

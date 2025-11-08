@@ -11,24 +11,31 @@ def main():
     
     # Check for API key at startup
     from src.config.settings import settings
-    if not settings.GROQ_API_KEY:
+    
+    # Force evaluation of the property to check Streamlit secrets
+    api_key = settings.GROQ_API_KEY
+    
+    if not api_key:
         st.error("⚠️ **API Key Missing**")
         st.markdown("""
         The Groq API key is not configured. Please set the `GROQ_API_KEY` environment variable.
         
         **For Streamlit Cloud:**
-        1. Go to your app settings
-        2. Click on "Secrets" in the sidebar
-        3. Add the following:
+        1. Go to your app settings (click the three dots menu in the top right)
+        2. Click on **"Secrets"** in the sidebar
+        3. Add the following in TOML format:
+        ```toml
+        GROQ_API_KEY = "your_api_key_here"
         ```
-        GROQ_API_KEY=your_api_key_here
-        ```
+        4. Save and the app will automatically redeploy
         
         **For Local Development:**
         Create a `.env` file in the project root with:
         ```
         GROQ_API_KEY=your_api_key_here
         ```
+        
+        **Note:** Make sure there are no extra spaces or quotes around your API key in the secrets file.
         """)
         st.stop()
 
