@@ -12,8 +12,30 @@ def main():
     # Check for API key at startup
     from src.config.settings import settings
     
-    # Force evaluation of the property to check Streamlit secrets
-    api_key = settings.GROQ_API_KEY
+    # Try to get API key from multiple sources
+    api_key = None
+    
+    # First check environment variable
+    api_key = os.getenv("GROQ_API_KEY")
+    
+    # If not found, try Streamlit secrets directly
+    if not api_key:
+        try:
+            # Try to access Streamlit secrets
+            if hasattr(st, 'secrets') and st.secrets is not None:
+                try:
+                    api_key = st.secrets.get("GROQ_API_KEY", None)
+                    if not api_key:
+                        # Try direct dictionary access
+                        api_key = st.secrets.get("GROQ_API_KEY") or getattr(st.secrets, "GROQ_API_KEY", None)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+    
+    # If still not found, try from settings (which also checks secrets)
+    if not api_key:
+        api_key = settings.GROQ_API_KEY
     
     if not api_key:
         st.error("⚠️ **API Key Missing**")
@@ -21,21 +43,26 @@ def main():
         The Groq API key is not configured. Please set the `GROQ_API_KEY` environment variable.
         
         **For Streamlit Cloud:**
-        1. Go to your app settings (click the three dots menu in the top right)
-        2. Click on **"Secrets"** in the sidebar
-        3. Add the following in TOML format:
+        1. Go to your app settings (click the **three dots (⋮)** menu in the top right)
+        2. Click on **"Settings"** or **"Manage app"**
+        3. Click on **"Secrets"** in the left sidebar
+        4. Add the following in **TOML format** (exactly as shown):
         ```toml
-        GROQ_API_KEY = "your_api_key_here"
+        GROQ_API_KEY = "your_actual_api_key_here"
         ```
-        4. Save and the app will automatically redeploy
+        5. Click **"Save"** - the app will automatically redeploy
+        
+        **Important Notes:**
+        - Use **quotes** around your API key value
+        - Use **TOML format** (not plain text)
+        - Make sure there are **no extra spaces** before or after the `=`
+        - The key name must be exactly: `GROQ_API_KEY`
         
         **For Local Development:**
         Create a `.env` file in the project root with:
         ```
         GROQ_API_KEY=your_api_key_here
         ```
-        
-        **Note:** Make sure there are no extra spaces or quotes around your API key in the secrets file.
         """)
         st.stop()
 

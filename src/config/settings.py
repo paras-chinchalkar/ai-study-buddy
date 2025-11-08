@@ -24,13 +24,22 @@ class Settings():
         if not api_key:
             try:
                 import streamlit as st
-                if hasattr(st, 'secrets'):
+                if hasattr(st, 'secrets') and st.secrets is not None:
                     try:
-                        # Try to access secrets - this works in Streamlit Cloud
-                        if 'GROQ_API_KEY' in st.secrets:
-                            api_key = st.secrets["GROQ_API_KEY"]
-                    except (AttributeError, KeyError, TypeError):
-                        # Secrets might not be configured or accessible yet
+                        # Try multiple ways to access the secret
+                        # Method 1: Direct access
+                        api_key = st.secrets.get("GROQ_API_KEY", None)
+                        # Method 2: Try dictionary-style access if get() didn't work
+                        if not api_key:
+                            try:
+                                api_key = st.secrets["GROQ_API_KEY"]
+                            except (KeyError, TypeError):
+                                pass
+                        # Method 3: Try as attribute (some Streamlit versions)
+                        if not api_key and hasattr(st.secrets, 'GROQ_API_KEY'):
+                            api_key = getattr(st.secrets, 'GROQ_API_KEY', None)
+                    except Exception:
+                        # Any other error accessing secrets
                         pass
             except ImportError:
                 # Streamlit not available (e.g., during testing)
