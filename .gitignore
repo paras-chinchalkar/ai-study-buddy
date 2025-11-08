@@ -50,5 +50,6 @@ results/
 Thumbs.db
 
 # Streamlit
-.streamlit/
+.streamlit/secrets.toml
+.streamlit/config.toml
 

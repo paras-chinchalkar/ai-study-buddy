@@ -8,6 +8,29 @@ load_dotenv()
 
 def main():
     st.set_page_config(page_title="Study Buddy AI", page_icon="🎧")
+    
+    # Check for API key at startup
+    from src.config.settings import settings
+    if not settings.GROQ_API_KEY:
+        st.error("⚠️ **API Key Missing**")
+        st.markdown("""
+        The Groq API key is not configured. Please set the `GROQ_API_KEY` environment variable.
+        
+        **For Streamlit Cloud:**
+        1. Go to your app settings
+        2. Click on "Secrets" in the sidebar
+        3. Add the following:
+        ```
+        GROQ_API_KEY=your_api_key_here
+        ```
+        
+        **For Local Development:**
+        Create a `.env` file in the project root with:
+        ```
+        GROQ_API_KEY=your_api_key_here
+        ```
+        """)
+        st.stop()
 
     if 'quiz_manager' not in st.session_state:
         st.session_state.quiz_manager = QuizManager()
